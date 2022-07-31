@@ -1,0 +1,335 @@
+--UNIVERSITATE
+create table universitate
+(id_universitate number(5) constraint pk_universitate primary key,
+nume varchar2(50),
+nr_facultati number(5)
+);
+
+create sequence seq_universitate
+increment by 1
+start with 0
+minvalue 0
+maxvalue 5
+nocycle;
+
+insert into universitate values (seq_universitate.nextval, 'Universitatea din Bucuresti', 6);
+insert into universitate values (seq_universitate.nextval, 'Universitatea Babes-Bolyai', 7);
+insert into universitate values (seq_universitate.nextval, 'Universitatea Politehnica', 10);
+insert into universitate values (seq_universitate.nextval, 'Universitatea „Alexandru Ioan Cuza”', 9);
+insert into universitate values (seq_universitate.nextval, 'Academia de Studii Economice', 10);
+
+commit;
+
+--LOCATIE
+create table locatie
+(id_locatie number(5) constraint pk_locatie primary key,
+oras varchar2(50),
+strada varchar2(50),
+numar number(5)
+);
+
+create sequence seq_locatie
+increment by 1
+start with 0
+minvalue 0
+maxvalue 10
+nocycle;
+
+insert into locatie values (seq_locatie.nextval, 'Bucuresti', 'Strada Academiei', 14);
+insert into locatie values (seq_locatie.nextval, 'Cluj', ' Strada Ploiești', 22);
+insert into locatie values (seq_locatie.nextval, 'Iasi', 'Bulevardul Carol I', 11);
+insert into locatie values (seq_locatie.nextval, 'Bucuresti', 'Piata Romana', 6);
+insert into locatie values (seq_locatie.nextval, 'Bucuresti', 'Splaiul Independentei', 313);
+insert into locatie values (seq_locatie.nextval, 'Bucuresti', ' Strada Edgar Quinet', 5);
+insert into locatie values (seq_locatie.nextval, 'Bucuresti', 'Splaiul Independentei', 314);
+insert into locatie values (seq_locatie.nextval, 'Bucuresti', 'Bulevardul Dacia', 41);
+insert into locatie values (seq_locatie.nextval, 'Cluj', 'Strada Mihail Kogălniceanu', 1);
+insert into locatie values (seq_locatie.nextval, 'Iasi', 'Bulevardul Carol I', 20);
+
+commit;
+
+--FACULTATE
+create table facultate
+(id_facultate number(5) constraint pk_facultate primary key,
+nume varchar2(50),
+id_locatie number(5),
+constraint fk_facultate1 foreign key (id_locatie) references locatie(id_locatie),
+id_universitate number(5),
+constraint fk_facultate2 foreign key (id_universitate) references universitate(id_universitate)
+);
+
+create sequence seq_facultate
+increment by 1
+start with 0
+minvalue 0
+maxvalue 10
+nocycle;
+
+insert into facultate values (seq_facultate.nextval, 'Facultatea de Matematica si Informatica', 1, 1);
+insert into facultate values (seq_facultate.nextval, 'Facultatea de Matematica si Informatica', 2, 2);
+insert into facultate values (seq_facultate.nextval, 'Facultatea de Litere', 3, 4);
+insert into facultate values (seq_facultate.nextval, 'Facultatea de Drept', 4, 5);
+insert into facultate values (seq_facultate.nextval, 'Facultatea de Energetica', 5, 3);
+insert into facultate values (seq_facultate.nextval, 'Facultatea de Litere', 6, 1);
+insert into facultate values (seq_facultate.nextval, 'Facultatea de Automatica si Calculatoare', 7, 3);
+insert into facultate values (seq_facultate.nextval, 'Facultatea de Business si Turism', 8, 5);
+insert into facultate values (seq_facultate.nextval, 'Facultatea de Fizica', 9, 2);
+insert into facultate values (seq_facultate.nextval, 'Facultatea de Biologie', 10, 4);
+
+commit;
+
+--INGRIJITOR
+create table ingrijitor
+(id_ingrijitor number(5) constraint pk_ingrijitor primary key,
+nume varchar2(50),
+prenume varchar2(50),
+salariu number(5),
+data_angajarii date,
+id_facultate number(5),
+constraint fk_ingrijitor foreign key (id_facultate) references facultate(id_facultate)
+);
+
+create sequence seq_ingrijitor
+increment by 1
+start with 0
+minvalue 0
+maxvalue 10
+nocycle;
+  
+insert into ingrijitor values (seq_ingrijitor.nextval, 'Argint', 'Cornel', 2000,to_date('24.09.2001','dd/mm/yyyy'), 4);
+insert into ingrijitor values (seq_ingrijitor.nextval, 'Coca', 'Eugen', 1500,to_date('24.09.1998','dd/mm/yyyy'), 1);
+insert into ingrijitor values (seq_ingrijitor.nextval, 'Mariut', 'Elena', 1500,to_date('04.04.2001','dd/mm/yyyy'), 3);
+insert into ingrijitor values (seq_ingrijitor.nextval, 'Muresan', 'Teofil', 2600,to_date('19.11.2022','dd/mm/yyyy'), 2);
+insert into ingrijitor values (seq_ingrijitor.nextval, 'Neamt', 'Liviu', 1400,to_date('01.09.2022','dd/mm/yyyy'), 5); 
+insert into ingrijitor values (seq_ingrijitor.nextval, 'Ciobanu', 'Ioana', 1300,to_date('01.08.2021','dd/mm/yyyy'), 5); 
+insert into ingrijitor values (seq_ingrijitor.nextval, 'Ursu', 'Camelia', 2000,to_date('01.08.2003','dd/mm/yyyy'), 7); 
+insert into ingrijitor values (seq_ingrijitor.nextval, 'Paduraru', 'Ion', 2300,to_date('08.08.2003','dd/mm/yyyy'), 1); 
+insert into ingrijitor values (seq_ingrijitor.nextval, 'Mitronici', 'Iuliana', 1200,to_date('12.03.2010','dd/mm/yyyy'), 1); 
+insert into ingrijitor values (seq_ingrijitor.nextval, 'Mormocea', 'Dorina', 2000,to_date('01.01.1998','dd/mm/yyyy'), 1); 
+
+commit;
+
+
+--SPECIALIZARE
+create table specializare
+(id_specializare number(5) constraint pk_specializare primary key,
+nume varchar2(50),
+durata number(5),
+id_facultate number(5),
+constraint fk_specializare foreign key (id_facultate) references facultate(id_facultate)
+);
+
+create sequence seq_specializare
+increment by 1
+start with 0
+minvalue 0
+maxvalue 10
+nocycle;
+
+insert into specializare values (seq_specializare.nextval, 'Matematica', 3, 1);
+insert into specializare values (seq_specializare.nextval, 'Informatica', 3, 1);
+insert into specializare values (seq_specializare.nextval, 'Limba si literatura romana', 3, 3);
+insert into specializare values (seq_specializare.nextval, 'Drept', 4, 4);
+insert into specializare values (seq_specializare.nextval, 'Biochimie', 3, 10);
+insert into specializare values (seq_specializare.nextval, 'Matematica', 3, 2);
+insert into specializare values (seq_specializare.nextval, 'Limba si literatura romana', 3, 6);
+insert into specializare values (seq_specializare.nextval, 'Ingineria sistemelor', 4, 7);
+insert into specializare values (seq_specializare.nextval, 'Fizica', 3, 9); 
+insert into specializare values (seq_specializare.nextval, 'Ingineria sistemelor electroenergetice', 4, 5);
+
+commit;
+
+--STUDENT
+create table student
+(id_student number(5) constraint pk_student primary key,
+nume varchar2(50),
+medie number(3, 2),
+an number(5)
+);
+
+create sequence seq_student
+increment by 1
+start with 0
+minvalue 0
+maxvalue 10
+nocycle;
+
+insert into student values (seq_student.nextval, 'Teodoro Emil', 9.2, 2);
+insert into student values (seq_student.nextval, 'Stefanescu Florian', 9.5, 1);
+insert into student values (seq_student.nextval, 'Stanescu Constantin', 8.6, 4);
+insert into student values (seq_student.nextval, 'Popa Valentin', 9.9, 3);
+insert into student values (seq_student.nextval, 'Ofrim Dragos', 8.3, 3);
+insert into student values (seq_student.nextval, 'Nicolae George', 9, 3);
+insert into student values (seq_student.nextval, 'Munteanu Toader', 7.9, 2);
+insert into student values (seq_student.nextval, 'Munteanu Calin', 9.9, 1);
+insert into student values (seq_student.nextval, 'Cobzaru Alina', 8.9, 1);
+insert into student values (seq_student.nextval, 'Voicu Aida', 7.8, 4);
+
+commit;
+
+
+--PROIECT
+create table proiect
+(id_proiect number(5) constraint pk_proiect primary key,
+nume varchar2(50),
+data_prezentare date
+);
+
+create sequence seq_proiect
+increment by 1
+start with 0
+minvalue 0
+maxvalue 5
+nocycle;
+
+insert into proiect values (seq_proiect.nextval, 'Proiect 1',to_date('29.01.2022','dd/mm/yyyy'));
+insert into proiect values (seq_proiect.nextval, 'Proiect 2',to_date('03.03.2022','dd/mm/yyyy'));
+insert into proiect values (seq_proiect.nextval, 'Proiect 3',to_date('24.01.2022','dd/mm/yyyy'));
+insert into proiect values (seq_proiect.nextval, 'Proiect 4',to_date('24.01.2022','dd/mm/yyyy'));
+insert into proiect values (seq_proiect.nextval, 'Proiect 5',to_date('24.01.2022','dd/mm/yyyy'));
+
+commit;
+
+
+--PROFESOR
+create table profesor
+(id_profesor number(5) constraint pk_profesor primary key,
+nume varchar2(50)
+);
+
+create sequence seq_profesor
+increment by 1
+start with 0
+minvalue 0
+maxvalue 10
+nocycle;
+
+insert into profesor values (seq_profesor.nextval, 'Dumitrescu Dumitru');
+insert into profesor values (seq_profesor.nextval, 'Petrescu Maria');
+insert into profesor values (seq_profesor.nextval, 'Negrescu Alexandra');
+insert into profesor values (seq_profesor.nextval, 'Vladimirescu Vlad');
+insert into profesor values (seq_profesor.nextval, 'Iliescu Ilie');
+insert into profesor values (seq_profesor.nextval, 'Lungu Andrei');
+insert into profesor values (seq_profesor.nextval, 'Badea Ion');
+insert into profesor values (seq_profesor.nextval, 'Cernat Mihai');
+insert into profesor values (seq_profesor.nextval, 'Ivanov Virginia');
+insert into profesor values (seq_profesor.nextval, 'Nicoara Tania');
+
+commit;
+
+
+--CURS
+create table curs
+(id_curs number(5) constraint pk_curs primary key,
+nume varchar2(50)
+);
+
+create sequence seq_curs
+increment by 1
+start with 0
+minvalue 0
+maxvalue 10
+nocycle;
+
+insert into curs values (seq_curs.nextval, 'Programare Orientata pe Obiecte');
+insert into curs values (seq_curs.nextval, 'Algebra');
+insert into curs values (seq_curs.nextval, 'Literatura universala');
+insert into curs values (seq_curs.nextval, 'Biologie celulara');
+insert into curs values (seq_curs.nextval, 'Electricitate');
+insert into curs values (seq_curs.nextval, 'Sisteme de operare');
+insert into curs values (seq_curs.nextval, 'Limba si literatura romana');
+insert into curs values (seq_curs.nextval, 'Microeconomie');
+insert into curs values (seq_curs.nextval, 'Drept civil');
+insert into curs values (seq_curs.nextval, 'Analiza');
+
+commit;
+
+
+--TINE
+create table tine
+(id_tine number(5) constraint pk_tine primary key,
+id_curs number(5),
+id_profesor number(5),
+constraint fk_tine_curs foreign key (id_curs) references curs(id_curs),
+constraint fk_tine_profesor foreign key (id_profesor) references profesor(id_profesor)
+);
+
+create sequence seq_tine
+increment by 1
+start with 0
+minvalue 0
+maxvalue 10
+nocycle;
+
+insert into tine values (seq_tine.nextval, 1, 3);
+insert into tine values (seq_tine.nextval, 2, 10);
+insert into tine values (seq_tine.nextval, 3, 6);
+insert into tine values (seq_tine.nextval, 4, 4);
+insert into tine values (seq_tine.nextval, 5, 7);
+insert into tine values (seq_tine.nextval, 6, 9);
+insert into tine values (seq_tine.nextval, 7, 2);
+insert into tine values (seq_tine.nextval, 8, 8);
+insert into tine values (seq_tine.nextval, 9, 5); 
+insert into tine values (seq_tine.nextval, 10, 1);
+
+commit;
+
+--COORDONEAZA
+create table coordoneaza
+(id_coordoneaza number(5) constraint pk_coordoneaza primary key,
+id_profesor number(5),
+id_student number(5),
+id_proiect number(5),
+constraint fk_coordoneaza_profesor foreign key (id_profesor) references profesor(id_profesor),
+constraint fk_coordoneaza_student foreign key (id_student) references student(id_student),
+constraint fk_coordoneaza_proiect foreign key (id_proiect) references proiect(id_proiect)
+);
+
+create sequence seq_coordoneaza
+increment by 1
+start with 0
+minvalue 0
+maxvalue 10
+nocycle;
+
+insert into coordoneaza values (seq_coordoneaza.nextval, 1, 3, 5);
+insert into coordoneaza values (seq_coordoneaza.nextval, 2, 10, 1);
+insert into coordoneaza values (seq_coordoneaza.nextval, 3, 6, 2);
+insert into coordoneaza values (seq_coordoneaza.nextval, 4, 4, 5);
+insert into coordoneaza values (seq_coordoneaza.nextval, 5, 7, 5);
+insert into coordoneaza values (seq_coordoneaza.nextval, 6, 9, 3);
+insert into coordoneaza values (seq_coordoneaza.nextval, 7, 2, 2);
+insert into coordoneaza values (seq_coordoneaza.nextval, 8, 8, 1);
+insert into coordoneaza values (seq_coordoneaza.nextval, 9, 5, 1); 
+insert into coordoneaza values (seq_coordoneaza.nextval, 10, 1, 1);
+
+commit;
+
+--ESTE_LA
+create table este_la
+(id_este_la number(5) constraint pk_este_la primary key,
+id_student number(5),
+id_specializare number(5),
+constraint fk_este_la_student foreign key (id_student) references student(id_student),
+constraint fk_este_la_specializare foreign key (id_specializare) references specializare(id_specializare)
+);
+
+create sequence seq_este_la
+increment by 1
+start with 0
+minvalue 0
+maxvalue 10
+nocycle;
+
+insert into este_la values (seq_este_la.nextval, 3, 1);
+insert into este_la values (seq_este_la.nextval, 10, 7);
+insert into este_la values (seq_este_la.nextval, 6, 2);
+insert into este_la values (seq_este_la.nextval, 4, 5);
+insert into este_la values (seq_este_la.nextval, 7, 4);
+insert into este_la values (seq_este_la.nextval, 9, 3);
+insert into este_la values (seq_este_la.nextval, 2, 10);
+insert into este_la values (seq_este_la.nextval, 8, 4);
+insert into este_la values (seq_este_la.nextval, 5, 8);  
+insert into este_la values (seq_este_la.nextval, 1, 1);
+
+commit;

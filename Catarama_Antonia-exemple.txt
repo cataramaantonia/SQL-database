@@ -1,0 +1,114 @@
+--11
+
+--1) Sa se afiseze numele si prenumele, data angajarii, facultatea, locatia facultatii si universitatea de care apartine ingrijitorilor care s-au angajat intre 2-09-2000 si 2-09-2005.
+--join pe 4 tabele, o functie pe siruri de caractere, filtrare la nivel de linii (where), 2 functii pe date calendaristice, ordonare
+select concat(i.nume,' ') || i.prenume "Ingrijitor", i.data_angajarii, f.nume "Facultatea", concat(l.oras,', ') || concat(l.strada,', ') || l.numar "Locatie", u.nume "Universitate"
+from ingrijitor i join facultate f on (i.id_facultate = f.id_facultate)
+                  join locatie l on (f.id_locatie = l.id_locatie)
+                  join universitate u on (f.id_universitate = u.id_universitate)
+where (i.data_angajarii > to_date('02-09-2000','dd-mm-yyyy') and  i.data_angajarii < add_months('02-SEP-2000',60))
+order by i.data_angajarii desc;
+
+
+
+--2) Sa se afiseze id-ul si numele specializarii care se afla in cadrul facultatii care este la locatia cu id-ul maxim.
+--cerere nesincronizata pe 3 tabele
+select id_specializare, nume
+from specializare s
+where s.id_facultate in 
+    (select id_facultate
+    from facultate f
+    where f.id_locatie =
+        (select max(id_locatie)
+        from locatie l
+        )
+    );
+    
+--3) Sa se afiseze numele, prenumele, data angajarii, salariul actual, salariul marit cu 20% pentru ingrijitorii angajati in 2021 si 2022 si salariul miscorat cu 5% pentru ingrijitorii angajati in 2001 si 1998.
+--nvl, decode, case, o functie pe siruri de caractere
+select nume, prenume, data_angajarii, salariu, 
+nvl((decode(to_char(data_angajarii, 'yyyy'), '2021', salariu * 1.2, '2022', salariu* 1.2)), salariu) "Salariul marit",
+case to_char(data_angajarii, 'yyyy') 
+    when '2001' then salariu * 0.95
+    when '1998' then salariu * 0.95
+else salariu
+end "Salariul micsorat"
+from ingrijitor;
+
+--4) Sa se afiseze numele si media duratei specializarilor fiecarei facultati.
+--clauza with, grupari de date, functii grup, filtrare la nivel de grupuri
+with durata_medie as (select f.nume, avg(s.durata) "Durata Medie"
+from specializare s join facultate f on(s.id_facultate = f.id_facultate)
+group by f.nume
+having avg(s.durata) >= 3)
+select*
+from durata_medie;
+
+--5) Sa se afiseze facultatile care contin sirul "MAT", salariul ingrijitorului si orasul in care se afla.
+-- cerere sincronizata pe 3 tabele, functie pe siruri de caractere
+select id_facultate, f.nume, 
+    (select round(avg(salariu),2)
+    from ingrijitor i
+    where f.id_facultate = i.id_facultate) "Salariu Mediu",
+    (select oras
+    from locatie l
+    where l.id_locatie = f.id_locatie) "Localitate"
+from facultate f
+where upper(f.nume) like '%MAT%';
+
+--12
+
+--1) Actualizare salarii ingrijitori cu salariul mediu daca salariul lor este mai mare decat salariul mediu.
+update ingrijitor
+set (salariu) = (select avg(salariu)
+                 from ingrijitor)
+where salariu > (select avg(salariu)
+                 from ingrijitor);
+rollback;
+select* from ingrijitor;
+
+--2)Sa se stearga universitatile care au numarul de facultati mai mare decat media.
+--tabela facultate depinde de tabela universitate, asadar nu puteam sterge nimic
+--am sters constrangerea care facea ca facultate sa depinda de universitate
+alter table facultate
+drop constraint fk_facultate2;
+--si am adaugat constrangerea asta, astfel incat atunci cand sterg o universitate, id_universitate din facultate va fi null pentru universitatea stearsa
+alter table facultate
+add constraint fk_facultate2
+foreign key (id_universitate)
+    references universitate(id_universitate)
+    on delete set null;
+    
+delete from universitate
+where nr_facultati >
+    (select avg(nr_facultati)
+     from universitate );
+rollback;
+select* from universitate;
+
+--3) Actualizare durata specializare din 3 ani in 4.
+update specializare
+set (durata) = 4
+where durata = 3;
+rollback;
+select* from specializare;
+
+--13
+create sequence seq_universitate
+increment by 1
+start with 0
+minvalue 0
+maxvalue 5
+nocycle;
+
+--14 
+create view angajati as 
+select i.nume, i.prenume, i.salariu
+from ingrijitor i join facultate f on (i.id_facultate = f.id_facultate)
+where i.salariu > 2000 and  f.nume = 'Facultatea de Matematica si Informatica';
+
+--operatie lmd permisa
+select * from angajati;
+
+--operatie lmd nepermisa
+insert into angajati values('nume', 'prenume', 1000);
